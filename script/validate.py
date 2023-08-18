@@ -65,6 +65,10 @@ class Activity():
                 for entry in logger.list_entries(filter_=log_filter, page_size=10):
                     try:
                         #if expected_result in (((entry.payload['metadata'])['tableCreation'])['table'])['tableName']:
+                        print("=============payload============\n")
+                        print(entry.payload)
+                        print("=============Resourcename============\n")
+                        print(entry.payload['resourceName'])
                         if expected_result in (entry.payload['resourceName']):
                             is_present=True
                             actual=expected_result
