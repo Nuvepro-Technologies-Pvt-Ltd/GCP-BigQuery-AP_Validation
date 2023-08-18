@@ -63,19 +63,19 @@ class Activity():
                 )
 
                 #for entry in logger.list_entries(filter_=log_filter, page_size=10):
-                for entry in logger.list_entries(page_size=10):
+                for entry in logger.list_entries(page_size=1000):
                     try:
                         print(str(entry.payload["methodName"]))
-                        if "google.cloud.bigquery.v2.TableService.InsertTable" in str(entry.payload["methodName"]) : 
+                        #if "google.cloud.bigquery.v2.TableService.InsertTable" in str(entry.payload["methodName"]) : 
                         #if expected_result in (((entry.payload['metadata'])['tableCreation'])['table'])['tableName']:
-                            print("=============payload============\n")
-                            print(entry.payload)
-                            print("=============Resourcename============\n")
-                            print(entry.payload['resourceName'])
-                            if expected_result in (entry.payload['resourceName']):
-                                is_present=True
-                                actual=expected_result
-                                break
+                        print("=============payload============\n")
+                        print(entry.payload)
+                        print("=============Resourcename============\n")
+                        print(entry.payload['resourceName'])
+                        if expected_result in (entry.payload['resourceName']):
+                            is_present=True
+                            actual=expected_result
+                            break
                     except Exception as e1:
                         pass
             except Exception as e:
