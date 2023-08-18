@@ -59,11 +59,11 @@ class Activity():
                 logger = logging_client.logger(logger_name)
 
                 log_filter = (
-                    f'resource.type="bigquery_dataset" '
+                    f'severity="NOTICE" '
                 )
 
-                #for entry in logger.list_entries(filter_=log_filter, page_size=10):
-                for entry in logger.list_entries(page_size=1000):
+                for entry in logger.list_entries(filter_=log_filter, page_size=10):
+                #for entry in logger.list_entries(page_size=1000):
                     try:
                         print(str(entry.payload["methodName"]))
                         #if "google.cloud.bigquery.v2.TableService.InsertTable" in str(entry.payload["methodName"]) : 
