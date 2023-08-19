@@ -18,12 +18,12 @@ class Activity():
             actual = 'BigQuery dataset name is not '+ expected_result
             try:
                 client = bigquery.Client(credentials= credentials,project=project_id)
-                dataset_ref = client.dataset(expected_result)
-
-                if (dataset_ref.dataset_id == expected_result):
-                    is_present=True
-                    actual=expected_result
-
+                datasets = list(client.list_datasets())
+                if datasets:
+                    for dataset in datasets:
+                        if (dataset.dataset_id == expected_result):
+                            is_present=True
+                            actual=expected_result
             except Exception as e:
                 is_present = False
 
