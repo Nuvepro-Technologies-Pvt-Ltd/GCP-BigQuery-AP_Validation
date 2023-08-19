@@ -5,7 +5,7 @@ import importlib.util
 import urllib.request
 from google.oauth2 import service_account
 from pprint import pprint
-from google.cloud import logging
+from google.cloud import bigquery
 
 class Activity():
 
@@ -16,22 +16,13 @@ class Activity():
         try:
             is_present = False
             actual = 'BigQuery dataset name is not '+ expected_result
-            logger_name = "cloudaudit.googleapis.com%2Factivity"
-            logging_client = logging.Client(credentials=credentials)
-
             try:
-                logger = logging_client.logger(logger_name)
+                client = bigquery.Client(credentials= credentials,project=project_id)
+                dataset_ref = client.dataset(expected_result)
 
-                log_filter = (
-                    f'resource.type="bigquery_dataset" '
-                    f'resource.labels.dataset_id="{expected_result}" '
-                )
-
-                for entry in logger.list_entries(filter_=log_filter, page_size=10):
-                    if (entry.resource.labels["dataset_id"] == expected_result):
-                        is_present=True
-                        actual=expected_result
-                        break
+                if (dataset_ref.dataset_id == expected_result):
+                    is_present=True
+                    actual=expected_result
 
             except Exception as e:
                 is_present = False
@@ -48,39 +39,23 @@ class Activity():
 
     def testcase_check_BigQuery_Table_Name(self,test_object,credentials,project_id):
         testcase_description="Check Bigquery Table name"
+        dataset_id = 'demo_bq'
         expected_result="demo_table"
-        
+
         try:
             is_present = False
             actual = 'BigQuery table is not '+ expected_result
-            logger_name = "cloudaudit.googleapis.com%2Factivity"
-            logging_client = logging.Client(credentials=credentials)
+            client = bigquery.Client(credentials= credentials,project=project_id)
+            dataset_ref = client.dataset(dataset_id)
+            tables = client.list_tables(dataset_ref)
             try:
-                logger = logging_client.logger(logger_name)
-
-                log_filter = (
-                    f'severity="NOTICE" '
-                )
-
-                for entry in logger.list_entries(filter_=log_filter, page_size=10):
-                #for entry in logger.list_entries(page_size=1000):
-                    try:
-                        print(str(entry.payload["methodName"]))
-                        #if "google.cloud.bigquery.v2.TableService.InsertTable" in str(entry.payload["methodName"]) : 
-                        #if expected_result in (((entry.payload['metadata'])['tableCreation'])['table'])['tableName']:
-                        print("=============payload============\n")
-                        print(entry.payload)
-                        print("=============Resourcename============\n")
-                        print(entry.payload['resourceName'])
-                        if expected_result in (entry.payload['resourceName']):
-                            is_present=True
-                            actual=expected_result
-                            break
-                    except Exception as e1:
-                        pass
-            except Exception as e:
-                is_present = False
-
+                for table in tables:
+                    if expected_result == table.table_id:
+                        is_present=True
+                        actual=expected_result
+                        break
+            except Exception as e1:
+                pass
             test_object.update_pre_result(testcase_description,expected_result)
             if is_present==True:
                 test_object.update_result(1,expected_result,actual,"Congrats! You have done it right!"," ") 
@@ -93,31 +68,23 @@ class Activity():
 
     def testcase_check_BigQuery_View_Name(self,test_object,credentials,project_id):
         testcase_description="Check Bigquery View name"
+        dataset_id = 'demo_bq'
         expected_result="top_10_technologies"
 
         try:
             is_present = False
-            actual = 'BigQuery table is not '+ expected_result
-            logger_name = "cloudaudit.googleapis.com%2Factivity"
-            logging_client = logging.Client(credentials=credentials)
+            actual = 'BigQuery View name is not '+ expected_result
+            client = bigquery.Client(credentials= credentials,project=project_id)
+            dataset_ref = client.dataset(dataset_id)
+            tables = client.list_tables(dataset_ref)
             try:
-                logger = logging_client.logger(logger_name)
-
-                log_filter = (
-                    f'resource.type="bigquery_dataset" '
-                )
-
-                for entry in logger.list_entries(filter_=log_filter, page_size=10):
-                    try:
-                        if expected_result in (((entry.payload['metadata'])['tableCreation'])['table'])['tableName']:
-                            is_present=True
-                            actual=expected_result
-                            break
-                    except Exception as e1:
-                        pass
-
-            except Exception as e:
-                is_present = False
+                for table in tables:
+                    if expected_result == table.table_id:
+                        is_present=True
+                        actual=expected_result
+                        break
+            except Exception as e1:
+                pass
 
             test_object.update_pre_result(testcase_description,expected_result)
             if is_present==True:
