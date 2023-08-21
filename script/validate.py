@@ -24,6 +24,7 @@ class Activity():
                         if (dataset.dataset_id == expected_result):
                             is_present=True
                             actual=expected_result
+                            break
             except Exception as e:
                 is_present = False
 
